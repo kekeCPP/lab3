@@ -16,9 +16,9 @@ outbuffpos: .quad   0
     .global getText
     .global getOutPos
     .global setOutPos
-    .global putText
     .global outImage
-    .global testFunction
+    .global putInt
+    .global putText
     .global main
 inImage:
     movq    $inbuff, %rdi
@@ -166,3 +166,49 @@ setOutPos:
     # %rdi = index to set position to
     movq    %rdi, outbuffpos
     ret
+
+outImage:
+    movq    $outbuff, %rdi
+    # movq    $64, %rsi
+    # movq    stdout, %rdx
+    call    puts
+    # movq    $0, outbuffpos
+    ret
+
+putInt:
+    #### Parameters ####
+    # %rdi = number to put in outbuff
+
+    call    getOutPos
+    movq    %rax, %r11      # %r10 = current position of outbuff
+    movq    $outbuff, %r10  # %r10 = pointer to outbuff
+    addq    %r11, %r10      # %r10 = pointer to current position in outbuff
+    movq    %rdi, %rax      # result
+    movq    $0, %rdi        # counter of numbers added
+    movq    $10, %rbx       # divisor
+    movq    $0, %rdx        # remainder
+
+    
+lPutInt:
+    movq    $0, %rdx        # reset %rdx for each iteration
+    divq    %rbx            # %rax / 10, %rax = quotient, %rdx = remainder
+    addq    $48, %rdx       # turn remainder into ascii character
+    pushq   %rdx            # push ascii character to stack
+    incq    %rdi            # %rdi++
+    cmpq    $0, %rax
+    jg      lPutInt         # loop if the quotient is larger than 0 (there are more numbers to read)
+    movq    %rdi, %r11      # else save the counter in %r11 for later use     
+
+rPutInt:     
+    popq    (%r10)          # pop the last added ascii character from the stack and store it at outbuff[%r10]
+    incq    %r10            # %r10++
+    dec     %rdi            # decrement the counter of numbers to add (%rdi--)
+    cmpq    $0, %rdi
+    jg      rPutInt         # jump if there are still more numbers to pop from the stack
+
+    movq    $0, (%r10)      # else add a null character at the end of the string
+    addq    $1, %r11        # increment the counter of characters added
+    # movq    $outbuff, %rax  # move outbuff to the return register (unnecessary because we don't care about return value from this function)
+    movq    %r11, %rdi  
+    call    setOutPos       # set the new position in outbuff to outbuffpos + amount of numbers added + 1 for null character
+    ret                     # return
