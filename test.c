@@ -1,13 +1,30 @@
 #include <stdio.h>
 
-char* inImage();
+void inImage();
 int getInt(char*);
+int getText(char buf[], int n);
+void setInPos(int pos);
+int getInPos();
+char getChar();
 
 int main()
 {
-    char* str = inImage();
-    int res;
-    res = getInt(str);
-    printf("Talet är: %d\n", res);
+    inImage();
+
+    int a;
+    setInPos(0);
+    a = getInPos();
+    printf("INPOS: %d\n", a);
+
+    char b;
+    b = getChar();
+    printf("RETURNED CHARACTER: %c\n", b);
+    a = getInPos();
+    printf("INPOS: %d\n", a);
+
+    char buf[64];
+    a = getText(buf, 4);
+    printf("GET TEXT TRANSFERRED %d CHARACTERS\n", a);
+
     return 0;
 }
