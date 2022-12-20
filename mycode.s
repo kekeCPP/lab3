@@ -19,6 +19,7 @@ outbuffpos: .quad   0
     .global outImage
     .global putInt
     .global putText
+    .global putChar
     .global main
 inImage:
     movq    $inbuff, %rdi
@@ -157,6 +158,7 @@ cInImage2:
 getOutPos:
     #### Return Value ####
     # %rax = current position of outbuffer
+
     movq    outbuffpos, %rax
     ret
 
@@ -164,6 +166,7 @@ getOutPos:
 setOutPos:
     #### Parameters ####
     # %rdi = index to set position to
+
     movq    %rdi, outbuffpos
     ret
 
@@ -172,6 +175,8 @@ outImage:
     # movq    $64, %rsi
     # movq    stdout, %rdx
     call    puts
+    movq    $0, %rdi
+    call    setOutPos
     # movq    $0, outbuffpos
     ret
 
@@ -212,3 +217,46 @@ rPutInt:
     movq    %r11, %rdi  
     call    setOutPos       # set the new position in outbuff to outbuffpos + amount of numbers added + 1 for null character
     ret                     # return
+
+
+putText:
+    #### Parameters ####
+    # %rdi = pointer to buf
+
+    call    getOutPos       # %rax = current position of outbuff
+    movq    $outbuff, %rsi  # %rsi = pointer to outbuff
+    addq    %rax, %rsi      # %rsi = pointer to current position in outbuff
+
+lPutText:
+    cmpq    $64, %rax
+    je      cPutText
+    cmpb    $0, (%rdi)      # compare character in buf to null
+    je      rPutText        # if null return
+    movq    (%rdi), %r10    # move character to temporary register
+    movq    %r10, (%rsi)    # move character from temporary register to current position in outbuff
+    incq    %rsi            # current position in outbuff++
+    incq    %rax            # new position in outbuff++
+    incq    %rdi            # position in buf++
+    jmp     lPutText        # read the next character
+
+rPutText:
+    movq    (%rdi), %r10    # move the null character to temporary register
+    movq    %r10, (%rsi)    # move the null character from temporary register to current position in outbuff
+    incq    %rax            # new position in outbuff++
+    movq    %rax, %rdi      # %rdi = new position in outbuff
+    call    setOutPos       # set the new position in the outbuff
+    call    getOutPos
+    ret
+
+cPutText:
+    subq    %rax, %rsi      # reset the outbuff pointer back to the first position
+    pushq   %rdi            # push the pointer in %rdi to the stack since outImage will change it
+    call    outImage
+    call    getOutPos       # reset %rax position back to 0
+    popq    %r11            # restore the pointer to the current position in buf from the stack into %r11
+    movq    %r11, %rdi      # restore the pointer to the current position of buf to %rdi
+    jmp     lPutText
+
+# putChar:
+    #### Parameters ####
+    # %rdi = character to put in outbuff

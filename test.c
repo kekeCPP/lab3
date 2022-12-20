@@ -7,6 +7,8 @@ void setInPos(int pos);
 int getInPos();
 char getChar();
 char* putInt(int a);
+int putText(char* string);
+void setOutPos(int pos);
 
 int main()
 {
@@ -26,8 +28,8 @@ int main()
     // char buf[64];
     // a = getText(buf, 4);
     // printf("GET TEXT TRANSFERRED %d CHARACTERS\n", a);
-    char* a = putInt(2048);
-    printf("THE QUOTIENT IS: %s\n", a);
+    int a = putText("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+    printf("THE STRING IS: %d\n", a);
 
     return 0;
 }
