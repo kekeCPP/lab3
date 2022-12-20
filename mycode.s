@@ -245,7 +245,6 @@ rPutText:
     incq    %rax            # new position in outbuff++
     movq    %rax, %rdi      # %rdi = new position in outbuff
     call    setOutPos       # set the new position in the outbuff
-    call    getOutPos
     ret
 
 cPutText:
@@ -257,6 +256,22 @@ cPutText:
     movq    %r11, %rdi      # restore the pointer to the current position of buf to %rdi
     jmp     lPutText
 
-# putChar:
+putChar:
     #### Parameters ####
     # %rdi = character to put in outbuff
+
+    call    getOutPos       # %rax = current position in outbuff
+    movq    $outbuff, %rsi  # %rsi = pointer to start of outbuff
+    addq    %rax, %rsi      # %rsi = pointer to current position of outbuff
+
+    movq    %rdi, (%rsi)    # copy the character into outbuff
+    incq    %rax            # increment the position of outbuff
+    movq    %rax, %rdi
+    call    setOutPos
+    cmpq    $64, %rdi
+    jl      rPutChar
+
+    call outImage
+
+rPutChar:
+    ret

@@ -9,6 +9,7 @@ char getChar();
 char* putInt(int a);
 int putText(char* string);
 void setOutPos(int pos);
+int putChar(char a);
 
 int main()
 {
@@ -28,8 +29,10 @@ int main()
     // char buf[64];
     // a = getText(buf, 4);
     // printf("GET TEXT TRANSFERRED %d CHARACTERS\n", a);
-    int a = putText("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
-    printf("THE STRING IS: %d\n", a);
+    // int a = putText("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+    // printf("THE STRING IS: %d\n", a);
+    // int b = putChar('g');
+    // printf("THE POSITION IS: %d\n", b);
 
     return 0;
 }
